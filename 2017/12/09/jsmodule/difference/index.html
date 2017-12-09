@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="blog,前端,全栈,Express,React,react native,nodejs" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="区别(CommonJs 与 ESModule)CommonJs(Node) 模块运行时动态加载  node中模块导入require是一个内置的函数，因此只有在运行后我们才可以得知模块导出内容，无法做静态分析 12const fileName = &apos;xx.js&apos;;const xx = require(fileName);  默认未开启严格模式  12345console.log(this); //">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CommonJs 与 ESModule区别">
+<meta property="og:url" content="http://yoursite.com/2017/12/09/jsmodule/difference/index.html">
+<meta property="og:site_name" content="学习笔记">
+<meta property="og:description" content="区别(CommonJs 与 ESModule)CommonJs(Node) 模块运行时动态加载  node中模块导入require是一个内置的函数，因此只有在运行后我们才可以得知模块导出内容，无法做静态分析 12const fileName = &apos;xx.js&apos;;const xx = require(fileName);  默认未开启严格模式  12345console.log(this); //">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-09T08:54:21.215Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CommonJs 与 ESModule区别">
+<meta name="twitter:description" content="区别(CommonJs 与 ESModule)CommonJs(Node) 模块运行时动态加载  node中模块导入require是一个内置的函数，因此只有在运行后我们才可以得知模块导出内容，无法做静态分析 12const fileName = &apos;xx.js&apos;;const xx = require(fileName);  默认未开启严格模式  12345console.log(this); //">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/12/09/jsmodule/difference/"/>
+
+
+
+
+
+  <title>CommonJs 与 ESModule区别 | 学习笔记</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?23472ca97d5aa2603cd95ff4ec004e99";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">学习笔记</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">--lihxhit</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/09/jsmodule/difference/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="lihxhit">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="学习笔记">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">CommonJs 与 ESModule区别</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-09T16:43:35+08:00">
+                2017-12-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017/12/09/jsmodule/difference/" class="leancloud_visitors" data-flag-title="CommonJs 与 ESModule区别">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="区别-CommonJs-与-ESModule"><a href="#区别-CommonJs-与-ESModule" class="headerlink" title="区别(CommonJs 与 ESModule)"></a>区别(CommonJs 与 ESModule)</h1><h5 id="CommonJs-Node"><a href="#CommonJs-Node" class="headerlink" title="CommonJs(Node)"></a>CommonJs(Node)</h5><ul>
+<li>模块运行时动态加载</li>
+</ul>
+<p>node中模块导入require是一个内置的函数，因此只有在运行后我们才可以得知模块导出内容，无法做静态分析</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fileName = <span class="string">'xx.js'</span>;</span><br><span class="line"><span class="keyword">const</span> xx = <span class="built_in">require</span>(fileName);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>默认未开启严格模式</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="keyword">this</span>); <span class="comment">// 指向module.exports</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">name</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>);<span class="comment">// 指向global</span></span><br><span class="line">&#125;</span><br><span class="line">name();</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>node中未开启严格模式情况下全局this指向module.exports。</p>
+<h5 id="ESModule"><a href="#ESModule" class="headerlink" title="ESModule"></a>ESModule</h5><ul>
+<li>默认开启严格模式(‘use strict’)</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="keyword">this</span>);<span class="comment">// undefined</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">name</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>);<span class="comment">// undefined</span></span><br><span class="line">&#125;</span><br><span class="line">name();</span><br></pre></td></tr></table></figure>
+<ul>
+<li>静态解析<ul>
+<li>只能作为模块顶层的语句出现，不能出现在 function 里面或是 if 里面</li>
+<li>import 的模块名只能是字符串常量</li>
+<li>import 声明提前，在模块顶层</li>
+</ul>
+</li>
+</ul>
+<h5 id="Tree-Shaking"><a href="#Tree-Shaking" class="headerlink" title="Tree Shaking"></a><a href="https://webpack.js.org/guides/tree-shaking" target="_blank" rel="noopener">Tree Shaking</a></h5><p>利用ES2015(es6)模块语法静态解析的特性，删除没有使用的代码，减小文件大小，对代码进行优化。<br>webpack 2.0 加入了这一特性。</p>
+<h6 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h6><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//export.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">a1</span>(<span class="params"></span>)</span>&#123;alert(<span class="string">'a1'</span>)&#125;;</span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">a2</span>(<span class="params"></span>)</span>&#123;alert(<span class="string">'a2'</span>)&#125;;</span><br><span class="line"><span class="comment">//import.js</span></span><br><span class="line"><span class="keyword">import</span> &#123;a1&#125; <span class="keyword">from</span> <span class="string">'./export.js'</span></span><br><span class="line">a1(<span class="string">'arguments'</span>)</span><br></pre></td></tr></table></figure>
+<h6 id="压缩后"><a href="#压缩后" class="headerlink" title="压缩后"></a>压缩后</h6><ul>
+<li>关闭tree shaking</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">!<span class="function"><span class="keyword">function</span> (<span class="params">modules</span>) </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__webpack_require__</span>(<span class="params">moduleId</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// ...some code</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">var</span> installedModules = &#123;&#125;;</span><br><span class="line">    <span class="comment">// ...some code</span></span><br><span class="line">&#125;([</span><br><span class="line">    <span class="function"><span class="keyword">function</span> (<span class="params">module, exports, __webpack_require__</span>) </span>&#123;</span><br><span class="line"><span class="meta">        "use strict"</span>;</span><br><span class="line">        (<span class="number">0</span>, __webpack_require__(<span class="number">1</span>).a1)(<span class="string">"arguements"</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="function"><span class="keyword">function</span> (<span class="params">module, exports, __webpack_require__</span>) </span>&#123;</span><br><span class="line"><span class="meta">        "use strict"</span>;</span><br><span class="line">        <span class="built_in">Object</span>.defineProperty(exports, <span class="string">"__esModule"</span>, &#123;</span><br><span class="line">            value: !<span class="number">0</span></span><br><span class="line">        &#125;),</span><br><span class="line">        exports.a1 = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            alert(<span class="string">"!"</span>)</span><br><span class="line">        &#125;,</span><br><span class="line">        exports.a2 = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            alert(<span class="string">"!!"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>开启tree shaking</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">!<span class="function"><span class="keyword">function</span> (<span class="params">modules</span>) </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__webpack_require__</span>(<span class="params">moduleId</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// ...some code</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">var</span> installedModules = &#123;&#125;;</span><br><span class="line">    <span class="comment">// ...some code</span></span><br><span class="line">&#125;([</span><br><span class="line">    <span class="function"><span class="keyword">function</span> (<span class="params">module, __webpack_exports__, __webpack_require__</span>) </span>&#123;</span><br><span class="line"><span class="meta">        "use strict"</span>;</span><br><span class="line">        <span class="built_in">Object</span>.defineProperty(__webpack_exports__, <span class="string">"__esModule"</span>, &#123;</span><br><span class="line">            value: !<span class="number">0</span></span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="keyword">var</span> __WEBPACK_IMPORTED_MODULE_0__es6_export__ = __webpack_require__(<span class="number">1</span>);</span><br><span class="line">        <span class="built_in">Object</span>(__WEBPACK_IMPORTED_MODULE_0__es6_export__.a)(<span class="string">"arguements"</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="function"><span class="keyword">function</span> (<span class="params">module, __webpack_exports__, __webpack_require__</span>) </span>&#123;</span><br><span class="line"><span class="meta">        "use strict"</span>;</span><br><span class="line">        __webpack_exports__.a = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            alert(<span class="string">"!"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+<h6 id="webpack-Tree-Shaking-开启条件"><a href="#webpack-Tree-Shaking-开启条件" class="headerlink" title="webpack Tree Shaking 开启条件:"></a>webpack Tree Shaking 开启条件:</h6><ul>
+<li>使用es2015模块语法(import 与 export)</li>
+<li>使用支持无用代码移除(dead code removal)的插件，如 UglifyJSPlugin</li>
+<li>去除babel-loder的模块转换插件，交给webpack来做模块转换<a href="http://2ality.com/2015/12/webpack-tree-shaking.html" target="_blank" rel="noopener">babel 6.0+ 配置</a></li>
+</ul>
+<h6 id="不足："><a href="#不足：" class="headerlink" title="不足："></a>不足：</h6><ul>
+<li>npm公共包大多不支持es2015 module</li>
+<li>与babel兼容做的不好，待babel重启modules属性</li>
+</ul>
+<h5 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h5><ul>
+<li>浏览器端代码使用es2015 module，模块化使用灵活，且可充分利用Tree Shaking减小代码体积</li>
+<li>服务端node适合动态引入且不需要过多考虑代码体积所以使用commonjs规范，同时可以拥有更好的debug支持，提高开发效率</li>
+</ul>
+<h5 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h5><ul>
+<li>webpack内置uglifyPlugin版本相对较低，建议不使用内置版本，单独安装</li>
+<li>babel6以下版本只需设置参数modules为false即可，babel6及以上只能列出除去transform-es2015-modules-commonjs所有plugin</li>
+<li>建议只import需要的方法，而不是import整个模块，便于去除dead_code</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/09/jsmodule/commonjs/" rel="next" title="CommonJs">
+                <i class="fa fa-chevron-left"></i> CommonJs
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/09/jsmodule/es-module/" rel="prev" title="ES Module">
+                ES Module <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMjI1Ni84ODIw"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/avatar.gif"
+                alt="lihxhit" />
+            
+              <p class="site-author-name" itemprop="name">lihxhit</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#区别-CommonJs-与-ESModule"><span class="nav-number">1.</span> <span class="nav-text"><a href="#&#x533A;&#x522B;-CommonJs-&#x4E0E;-ESModule" class="headerlink" title="&#x533A;&#x522B;(CommonJs &#x4E0E; ESModule)"></a>&#x533A;&#x522B;(CommonJs &#x4E0E; ESModule)</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#CommonJs-Node"><span class="nav-number">1.0.0.0.1.</span> <span class="nav-text"><a href="#CommonJs-Node" class="headerlink" title="CommonJs(Node)"></a>CommonJs(Node)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ESModule"><span class="nav-number">1.0.0.0.2.</span> <span class="nav-text"><a href="#ESModule" class="headerlink" title="ESModule"></a>ESModule</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Tree-Shaking"><span class="nav-number">1.0.0.0.3.</span> <span class="nav-text"><a href="#Tree-Shaking" class="headerlink" title="Tree Shaking"></a><a href="https://webpack.js.org/guides/tree-shaking" target="_blank" rel="noopener">Tree Shaking</a></span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#源码"><span class="nav-number">1.0.0.0.3.1.</span> <span class="nav-text"><a href="#&#x6E90;&#x7801;" class="headerlink" title="&#x6E90;&#x7801;"></a>&#x6E90;&#x7801;</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#压缩后"><span class="nav-number">1.0.0.0.3.2.</span> <span class="nav-text"><a href="#&#x538B;&#x7F29;&#x540E;" class="headerlink" title="&#x538B;&#x7F29;&#x540E;"></a>&#x538B;&#x7F29;&#x540E;</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#webpack-Tree-Shaking-开启条件"><span class="nav-number">1.0.0.0.3.3.</span> <span class="nav-text"><a href="#webpack-Tree-Shaking-&#x5F00;&#x542F;&#x6761;&#x4EF6;" class="headerlink" title="webpack Tree Shaking &#x5F00;&#x542F;&#x6761;&#x4EF6;:"></a>webpack Tree Shaking &#x5F00;&#x542F;&#x6761;&#x4EF6;:</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#不足："><span class="nav-number">1.0.0.0.3.4.</span> <span class="nav-text"><a href="#&#x4E0D;&#x8DB3;&#xFF1A;" class="headerlink" title="&#x4E0D;&#x8DB3;&#xFF1A;"></a>&#x4E0D;&#x8DB3;&#xFF1A;</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#结论"><span class="nav-number">1.0.0.0.4.</span> <span class="nav-text"><a href="#&#x7ED3;&#x8BBA;" class="headerlink" title="&#x7ED3;&#x8BBA;"></a>&#x7ED3;&#x8BBA;</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Tips"><span class="nav-number">1.0.0.0.5.</span> <span class="nav-text"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">lihxhit</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Ggt2YV0uHip8GhrOjHuBlhWE-gzGzoHsz", "H8jCQgQaxNkatIy89PRtb3b2");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
